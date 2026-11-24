@@ -35,6 +35,17 @@ RUN echo "fs.file-max = 65535" > /etc/sysctl.conf \
 COPY docker/scripts/install-s6 /tmp/install-s6
 RUN /tmp/install-s6 "${TARGETPLATFORM}" && rm -f /tmp/install-s6
 
+# mkcert for the built-in Local CA (fork addition). It is a static Go binary
+# with no runtime dependencies. Pinned to v1.4.4, the latest release.
+RUN case "${TARGETPLATFORM}" in \
+		"linux/amd64") MKCERT_ARCH="amd64" ;; \
+		"linux/arm64") MKCERT_ARCH="arm64" ;; \
+		*) echo "Unsupported platform for mkcert: ${TARGETPLATFORM}" && exit 1 ;; \
+	esac \
+	&& curl -fsSL -o /usr/local/bin/mkcert "https://github.com/FiloSottile/mkcert/releases/download/v1.4.4/mkcert-v1.4.4-linux-${MKCERT_ARCH}" \
+	&& chmod +x /usr/local/bin/mkcert \
+	&& mkcert -version
+
 EXPOSE 80 81 443
 
 COPY backend       /app
@@ -59,8 +70,8 @@ ENTRYPOINT [ "/init" ]
 
 LABEL org.label-schema.schema-version="1.0" \
 	org.label-schema.license="MIT" \
-	org.label-schema.name="nginx-proxy-manager" \
-	org.label-schema.description="Docker container for managing Nginx proxy hosts with a simple, powerful interface " \
-	org.label-schema.url="https://github.com/jc21/nginx-proxy-manager" \
-	org.label-schema.vcs-url="https://github.com/jc21/nginx-proxy-manager.git" \
-	org.label-schema.cmd="docker run --rm -ti jc21/nginx-proxy-manager:latest"
+	org.label-schema.name="nginx-proxy-manager-mkcert" \
+	org.label-schema.description="Docker container for managing Nginx proxy hosts with a simple, powerful interface (fork with a built-in mkcert Local CA for internal networks)" \
+	org.label-schema.url="https://github.com/knsew/nginx-proxy-manager" \
+	org.label-schema.vcs-url="https://github.com/knsew/nginx-proxy-manager.git" \
+	org.label-schema.cmd="docker run --rm -ti npm-mkcert:latest"
