@@ -1,0 +1,37 @@
+{
+	"operationId": "downloadLocalCARoot",
+	"responses": {
+		"200": {
+			"content": {
+				"application/x-pem-file": {
+					"schema": {
+						"format": "binary",
+						"type": "string"
+					}
+				}
+			},
+			"description": "200 response"
+		},
+		"404": {
+			"content": {
+				"application/json": {
+					"schema": {
+						"$ref": "../../../../../components/error.json"
+					}
+				}
+			},
+			"description": "Local CA has not been created yet"
+		}
+	},
+	"security": [
+		{
+			"bearerAuth": [
+				"certificates.view"
+			]
+		}
+	],
+	"summary": "Download the Local CA root certificate",
+	"tags": [
+		"certificates"
+	]
+}

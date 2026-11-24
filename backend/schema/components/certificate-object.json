@@ -68,6 +68,9 @@
 				"letsencrypt_certificate": {
 					"type": "object"
 				},
+				"mkcert_certificate": {
+					"type": "object"
+				},
 				"propagation_seconds": {
 					"type": "integer",
 					"minimum": 0

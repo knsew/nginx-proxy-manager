@@ -172,6 +172,82 @@ router
 	});
 
 /**
+ * Local CA (mkcert)
+ *
+ * /api/nginx/certificates/local-ca
+ *
+ * Note: these routes must stay above the "/:certificate_id" route below, or
+ * "local-ca" would be parsed as a certificate id.
+ */
+router
+	.route("/local-ca")
+	.options((_, res) => {
+		res.sendStatus(204);
+	})
+	.all(jwtdecode())
+
+	/**
+	 * GET /api/nginx/certificates/local-ca
+	 *
+	 * Status of the Local CA: whether it exists, and the public details of its
+	 * root certificate (fingerprint, subject, validity). The CA private key is
+	 * never exposed.
+	 */
+	.get(async (req, res, next) => {
+		try {
+			const status = await internalCertificate.getLocalCAStatus(res.locals.access);
+			res.status(200).send(status);
+		} catch (err) {
+			debug(logger, `${req.method.toUpperCase()} ${req.path}: ${err}`);
+			next(err);
+		}
+	})
+
+	/**
+	 * POST /api/nginx/certificates/local-ca
+	 *
+	 * Create the Local CA if it does not exist yet, then return its status.
+	 */
+	.post(async (req, res, next) => {
+		try {
+			const status = await internalCertificate.ensureLocalCA(res.locals.access);
+			res.status(201).send(status);
+		} catch (err) {
+			debug(logger, `${req.method.toUpperCase()} ${req.path}: ${err}`);
+			next(err);
+		}
+	});
+
+/**
+ * Local CA root certificate download
+ *
+ * /api/nginx/certificates/local-ca/root-ca
+ */
+router
+	.route("/local-ca/root-ca")
+	.options((_, res) => {
+		res.sendStatus(204);
+	})
+	.all(jwtdecode())
+
+	/**
+	 * GET /api/nginx/certificates/local-ca/root-ca
+	 *
+	 * Download the Local CA root certificate (public part) for installing on
+	 * client devices. The CA private key is never served.
+	 */
+	.get(async (req, res, next) => {
+		try {
+			const pem = await internalCertificate.getLocalCARoot(res.locals.access);
+			res.setHeader("Content-Disposition", 'attachment; filename="rootCA.pem"');
+			res.status(200).type("application/x-pem-file").send(pem);
+		} catch (err) {
+			debug(logger, `${req.method.toUpperCase()} ${req.path}: ${err}`);
+			next(err);
+		}
+	});
+
+/**
  * Specific certificate
  *
  * /api/nginx/certificates/123

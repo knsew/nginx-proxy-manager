@@ -1,0 +1,35 @@
+{
+	"additionalProperties": false,
+	"description": "Status of the Local CA (mkcert). Only public information about the root certificate is ever exposed: the CA private key has no API representation.",
+	"properties": {
+		"exists": {
+			"description": "Whether a Local CA has been created yet",
+			"example": true,
+			"type": "boolean"
+		},
+		"fingerprint_sha256": {
+			"description": "SHA256 fingerprint of the root certificate, for verifying the downloaded file",
+			"example": "AA:BB:CC:DD:EE:FF:00:11:22:33:44:55:66:77:88:99:AA:BB:CC:DD:EE:FF:00:11:22:33:44:55:66:77:88:99",
+			"type": "string"
+		},
+		"subject": {
+			"description": "Subject of the root certificate",
+			"example": "CN = mkcert root@localhost",
+			"type": "string"
+		},
+		"valid_from": {
+			"description": "Date and time the root certificate becomes valid",
+			"example": "2026-11-24 01:23:45",
+			"type": "string"
+		},
+		"valid_to": {
+			"description": "Date and time the root certificate expires",
+			"example": "2036-11-24 01:23:45",
+			"type": "string"
+		}
+	},
+	"required": [
+		"exists"
+	],
+	"type": "object"
+}

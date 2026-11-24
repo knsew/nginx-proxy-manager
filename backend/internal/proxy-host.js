@@ -20,7 +20,10 @@ const internalProxyHost = {
 	 */
 	create: (access, data) => {
 		let thisData = data;
-		const createCertificate = thisData.certificate_id === "new";
+		const quickCertProvider =
+			thisData.certificate_id === "new-mkcert" ? "mkcert" : "letsencrypt";
+		const createCertificate =
+			thisData.certificate_id === "new" || thisData.certificate_id === "new-mkcert";
 
 		if (createCertificate) {
 			delete thisData.certificate_id;
@@ -72,7 +75,7 @@ const internalProxyHost = {
 			.then((row) => {
 				if (createCertificate) {
 					return internalCertificate
-						.createQuickCertificate(access, thisData)
+						.createQuickCertificate(access, { ...thisData, provider: quickCertProvider })
 						.then((cert) => {
 							// Update host with cert id and re-apply the originally submitted
 							// SSL toggles, now that a real certificate exists for them to
@@ -131,7 +134,10 @@ const internalProxyHost = {
 	 */
 	update: (access, data) => {
 		let thisData = data;
-		const createCertificate = thisData.certificate_id === "new";
+		const quickCertProvider =
+			thisData.certificate_id === "new-mkcert" ? "mkcert" : "letsencrypt";
+		const createCertificate =
+			thisData.certificate_id === "new" || thisData.certificate_id === "new-mkcert";
 
 		if (createCertificate) {
 			delete thisData.certificate_id;
@@ -177,6 +183,7 @@ const internalProxyHost = {
 				if (createCertificate) {
 					return internalCertificate
 						.createQuickCertificate(access, {
+							provider: quickCertProvider,
 							domain_names: thisData.domain_names || row.domain_names,
 							meta: _.assign({}, row.meta, thisData.meta),
 						})

@@ -127,6 +127,19 @@
 				"$ref": "./paths/nginx/certificates/dns-providers/get.json"
 			}
 		},
+		"/nginx/certificates/local-ca": {
+			"get": {
+				"$ref": "./paths/nginx/certificates/local-ca/get.json"
+			},
+			"post": {
+				"$ref": "./paths/nginx/certificates/local-ca/post.json"
+			}
+		},
+		"/nginx/certificates/local-ca/root-ca": {
+			"get": {
+				"$ref": "./paths/nginx/certificates/local-ca/root-ca/get.json"
+			}
+		},
 		"/nginx/certificates/validate": {
 			"post": {
 				"$ref": "./paths/nginx/certificates/validate/post.json"

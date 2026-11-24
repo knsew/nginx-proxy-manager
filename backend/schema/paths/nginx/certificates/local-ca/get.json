@@ -1,0 +1,37 @@
+{
+	"operationId": "getLocalCAStatus",
+	"responses": {
+		"200": {
+			"content": {
+				"application/json": {
+					"examples": {
+						"default": {
+							"value": {
+								"exists": true,
+								"fingerprint_sha256": "AA:BB:CC:DD:EE:FF:00:11:22:33:44:55:66:77:88:99:AA:BB:CC:DD:EE:FF:00:11:22:33:44:55:66:77:88:99",
+								"subject": "CN = mkcert root@localhost",
+								"valid_from": "2026-11-24 01:23:45",
+								"valid_to": "2036-11-24 01:23:45"
+							}
+						}
+					},
+					"schema": {
+						"$ref": "../../../../components/local-ca-object.json"
+					}
+				}
+			},
+			"description": "200 response"
+		}
+	},
+	"security": [
+		{
+			"bearerAuth": [
+				"certificates.view"
+			]
+		}
+	],
+	"summary": "Get Local CA Status",
+	"tags": [
+		"certificates"
+	]
+}

@@ -19,7 +19,8 @@ const internalDeadHost = {
 	 * @returns {Promise}
 	 */
 	create: async (access, data) => {
-		const createCertificate = data.certificate_id === "new";
+		const quickCertProvider = data.certificate_id === "new-mkcert" ? "mkcert" : "letsencrypt";
+		const createCertificate = data.certificate_id === "new" || data.certificate_id === "new-mkcert";
 
 		if (createCertificate) {
 			delete data.certificate_id;
@@ -73,7 +74,7 @@ const internalDeadHost = {
 		});
 
 		if (createCertificate) {
-			const cert = await internalCertificate.createQuickCertificate(access, data);
+			const cert = await internalCertificate.createQuickCertificate(access, { ...data, provider: quickCertProvider });
 
 			// Update host with cert id and re-apply the originally submitted
 			// SSL toggles, cleaned now that a real certificate exists for them
@@ -120,7 +121,8 @@ const internalDeadHost = {
 	 * @return {Promise}
 	 */
 	update: async (access, data) => {
-		const createCertificate = data.certificate_id === "new";
+		const quickCertProvider = data.certificate_id === "new-mkcert" ? "mkcert" : "letsencrypt";
+		const createCertificate = data.certificate_id === "new" || data.certificate_id === "new-mkcert";
 		if (createCertificate) {
 			delete data.certificate_id;
 		}
@@ -157,6 +159,7 @@ const internalDeadHost = {
 
 		if (createCertificate) {
 			const cert = await internalCertificate.createQuickCertificate(access, {
+				provider: quickCertProvider,
 				domain_names: data.domain_names || row.domain_names,
 				meta: _.assign({}, row.meta, data.meta),
 			});

@@ -19,7 +19,8 @@ const internalStream = {
 	 * @returns {Promise}
 	 */
 	create: (access, data) => {
-		const create_certificate = data.certificate_id === "new";
+		const quick_cert_provider = data.certificate_id === "new-mkcert" ? "mkcert" : "letsencrypt";
+		const create_certificate = data.certificate_id === "new" || data.certificate_id === "new-mkcert";
 
 		if (create_certificate) {
 			delete data.certificate_id;
@@ -44,7 +45,7 @@ const internalStream = {
 			.then((row) => {
 				if (create_certificate) {
 					return internalCertificate
-						.createQuickCertificate(access, data)
+						.createQuickCertificate(access, { ...data, provider: quick_cert_provider })
 						.then((cert) => {
 							// update host with cert id
 							return internalStream.update(access, {
@@ -94,7 +95,10 @@ const internalStream = {
 	 */
 	update: (access, data) => {
 		let thisData = data;
-		const create_certificate = thisData.certificate_id === "new";
+		const quick_cert_provider =
+			thisData.certificate_id === "new-mkcert" ? "mkcert" : "letsencrypt";
+		const create_certificate =
+			thisData.certificate_id === "new" || thisData.certificate_id === "new-mkcert";
 
 		if (create_certificate) {
 			delete thisData.certificate_id;
@@ -117,6 +121,7 @@ const internalStream = {
 				if (create_certificate) {
 					return internalCertificate
 						.createQuickCertificate(access, {
+							provider: quick_cert_provider,
 							domain_names: thisData.domain_names || row.domain_names,
 							meta: _.assign({}, row.meta, thisData.meta),
 						})

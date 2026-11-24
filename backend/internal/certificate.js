@@ -18,6 +18,7 @@ import userModel from "../models/user.js";
 import internalAuditLog from "./audit-log.js";
 import internalHost from "./host.js";
 import internalNginx from "./nginx.js";
+import localCa from "./local-ca.js";
 
 const letsencryptConfig = "/etc/letsencrypt.ini";
 const certbotCommand = "certbot";
@@ -214,11 +215,11 @@ const internalCertificate = {
 				.add(internalCertificate.renewBeforeExpirationBy[0], internalCertificate.renewBeforeExpirationBy[1])
 				.format("YYYY-MM-DD HH:mm:ss");
 
-			// Fetch all the letsencrypt certs from the db that will expire within the configured threshold
+			// Fetch all the automatically renewable certs from the db that will expire within the configured threshold
 			certificateModel
 				.query()
 				.where("is_deleted", 0)
-				.andWhere("provider", "letsencrypt")
+				.whereIn("provider", ["letsencrypt", "mkcert"])
 				.andWhere("expires_on", "<", expirationThreshold)
 				.then((certificates) => {
 					if (!certificates?.length) {
@@ -282,7 +283,7 @@ const internalCertificate = {
 		await access.can("certificates:create", data);
 		data.owner_user_id = access.token.getUserId(1);
 
-		if (data.provider === "letsencrypt") {
+		if (data.provider === "letsencrypt" || data.provider === "mkcert") {
 			data.nice_name = data.domain_names.join(", ");
 		}
 
@@ -373,6 +374,39 @@ const internalCertificate = {
 					return savedRow;
 				} catch (err) {
 					// Delete the certificate from the database if it was not created successfully
+					await certificateModel.query().deleteById(certificate.id);
+					throw err;
+				}
+			} else if (certificate.provider === "mkcert") {
+				// No ACME challenge and no email: mkcert signs locally, so no hosts
+				// need disabling and no nginx config is involved.
+				try {
+					await internalCertificate.requestMkcertSsl(certificate);
+
+					// At this point, the mkcert cert should exist on disk.
+					// Lets get the expiry date from the file and update the row silently
+					const certInfo = await internalCertificate.getCertificateInfoFromFile(
+						`${internalCertificate.getCustomCertPath(certificate.id)}/fullchain.pem`,
+					);
+					const savedRow = await certificateModel
+						.query()
+						.patchAndFetchById(certificate.id, {
+							expires_on: moment(certInfo.dates.to, "X").format("YYYY-MM-DD HH:mm:ss"),
+						})
+						.then(utils.omitRow(omissions()));
+
+					// Add cert data for audit log
+					savedRow.meta = _.assign({}, savedRow.meta, {
+						mkcert_certificate: certInfo,
+					});
+
+					await internalCertificate.addCreatedAuditLog(access, certificate.id, savedRow);
+
+					return savedRow;
+				} catch (err) {
+					// Delete the certificate from the database if it was not created successfully,
+					// and remove any files a failed issuance may have left behind.
+					localCa.removeCertificateFiles(certificate.id);
 					await certificateModel.query().deleteById(certificate.id);
 					throw err;
 				}
@@ -505,8 +539,11 @@ const internalCertificate = {
 	download: async (access, data) => {
 		await access.can("certificates:get", data);
 		const certificate = await internalCertificate.get(access, data);
-		if (certificate.provider === "letsencrypt") {
-			const zipDirectory = internalCertificate.getLiveCertPath(data.id);
+		if (certificate.provider === "letsencrypt" || certificate.provider === "mkcert") {
+			const zipDirectory =
+				certificate.provider === "letsencrypt"
+					? internalCertificate.getLiveCertPath(data.id)
+					: internalCertificate.getCustomCertPath(data.id);
 			if (!fs.existsSync(zipDirectory)) {
 				throw new error.ItemNotFoundError(`Certificate ${certificate.nice_name} does not exists`);
 			}
@@ -525,7 +562,7 @@ const internalCertificate = {
 				fileName: opName,
 			};
 		}
-		throw new error.ValidationError("Only Let'sEncrypt certificates can be downloaded");
+		throw new error.ValidationError("Only Let'sEncrypt and Local CA (mkcert) certificates can be downloaded");
 	},
 
 	/**
@@ -610,6 +647,15 @@ const internalCertificate = {
 			// The row is already deleted and audited, so leftover files are logged, not thrown:
 			// an error here would report a completed delete as failed, and a retry would 404.
 			const leftover = internalCertificate.removeLetsEncryptFiles(row.id);
+			if (leftover.length) {
+				logger.warn(
+					`Certificate #${row.id} was deleted, but these files could not be removed and should be deleted by hand: ${leftover.join(", ")}`,
+				);
+			}
+		} else if (row.provider === "mkcert") {
+			// Remove only this certificate's files. The Local CA itself is shared
+			// by every Local CA certificate and is never deleted here.
+			const leftover = localCa.removeCertificateFiles(row.id);
 			if (leftover.length) {
 				logger.warn(
 					`Certificate #${row.id} was deleted, but these files could not be removed and should be deleted by hand: ${leftover.join(", ")}`,
@@ -709,7 +755,7 @@ const internalCertificate = {
 	writeCustomCert: async (certificate) => {
 		logger.info("Writing Custom Certificate:", certificate);
 
-		const dir = `/data/custom_ssl/npm-${certificate.id}`;
+		const dir = internalCertificate.getCustomCertPath(certificate.id);
 
 		return new Promise((resolve, reject) => {
 			if (certificate.provider === "letsencrypt") {
@@ -759,7 +805,7 @@ const internalCertificate = {
 	 */
 	createQuickCertificate: async (access, data) => {
 		return await internalCertificate.create(access, {
-			provider: "letsencrypt",
+			provider: data.provider || "letsencrypt",
 			domain_names: data.domain_names,
 			meta: data.meta,
 		});
@@ -1177,6 +1223,53 @@ const internalCertificate = {
 	},
 
 	/**
+	 * Issues (or re-issues) a certificate with the Local CA (mkcert). The CA
+	 * is created first if it does not exist yet. No hosts are disabled and no
+	 * nginx config is involved: signing is a local operation.
+	 *
+	 * @param   {Object}  certificate  the certificate row
+	 * @returns {Promise}
+	 */
+	requestMkcertSsl: async (certificate) => {
+		await localCa.issueCertificate(certificate.id, certificate.domain_names);
+	},
+
+	/**
+	 * Status of the Local CA for the UI: whether it exists, and the public
+	 * details of its root certificate. The CA private key is never exposed.
+	 *
+	 * @param   {Access}  access
+	 * @returns {Promise<Object>}
+	 */
+	getLocalCAStatus: async (access) => {
+		await access.can("certificates:list");
+		return localCa.getStatus();
+	},
+
+	/**
+	 * Creates the Local CA if it does not exist yet, then returns its status.
+	 *
+	 * @param   {Access}  access
+	 * @returns {Promise<Object>}
+	 */
+	ensureLocalCA: async (access) => {
+		await access.can("certificates:create");
+		await localCa.ensureCA();
+		return localCa.getStatus();
+	},
+
+	/**
+	 * The Local CA root certificate (public part) for clients to install.
+	 *
+	 * @param   {Access}  access
+	 * @returns {Promise<String>}  PEM-encoded root certificate
+	 */
+	getLocalCARoot: async (access) => {
+		await access.can("certificates:list");
+		return localCa.getRootCertPem();
+	},
+
+	/**
 	 * @param   {Access}  access
 	 * @param   {Object}  data
 	 * @param   {Number}  data.id
@@ -1219,7 +1312,36 @@ const internalCertificate = {
 			return updatedCertificate;
 		}
 
-		throw new error.ValidationError("Only Let'sEncrypt certificates can be renewed");
+		if (certificate.provider === "mkcert") {
+			// Re-issuing is a local mkcert call: no challenge, no network.
+			await internalCertificate.requestMkcertSsl(certificate);
+			const certInfo = await internalCertificate.getCertificateInfoFromFile(
+				`${internalCertificate.getCustomCertPath(certificate.id)}/fullchain.pem`,
+			);
+
+			const updatedCertificate = await certificateModel.query().patchAndFetchById(certificate.id, {
+				expires_on: moment(certInfo.dates.to, "X").format("YYYY-MM-DD HH:mm:ss"),
+			});
+
+			// Add to audit log
+			await internalAuditLog.add(access, {
+				action: "renewed",
+				object_type: "certificate",
+				object_id: updatedCertificate.id,
+				meta: updatedCertificate,
+			});
+
+			// The renewal has succeeded and been recorded at this point. A reload failure
+			// (e.g. an unrelated host's config is broken) must not turn it into an error;
+			// nginx picks the new files up on the next successful reload.
+			if (reload) {
+				await internalCertificate.reloadAfterRenew();
+			}
+
+			return updatedCertificate;
+		}
+
+		throw new error.ValidationError("Only Let'sEncrypt and Local CA (mkcert) certificates can be renewed");
 	},
 
 	/**
@@ -1619,6 +1741,10 @@ const internalCertificate = {
 
 	getLiveCertPath: (certificateId) => {
 		return `/etc/letsencrypt/live/npm-${certificateId}`;
+	},
+
+	getCustomCertPath: (certificateId) => {
+		return localCa.getCertDir(certificateId);
 	},
 };
 
