@@ -251,6 +251,21 @@
 	"certificates.key-type-rsa": {
 		"defaultMessage": "RSA 2048"
 	},
+	"certificates.local-ca": {
+		"defaultMessage": "Kohalik CA (mkcert)"
+	},
+	"certificates.local-ca.names-note": {
+		"defaultMessage": "Ühele sertifikaadile saab kombineerida hostinimesid, metamärke (nt *.home.arpa) ja IP-aadresse (nt 10.1.1.52)."
+	},
+	"certificates.local-ca.request.subtitle": {
+		"defaultMessage": "Allkirjastatud sisseehitatud kohaliku CA poolt, siseteenuste jaoks"
+	},
+	"certificates.local-ca.request.title": {
+		"defaultMessage": "Taotle uut kohaliku CA sertifikaati"
+	},
+	"certificates.local-ca.warning": {
+		"defaultMessage": "Selle sertifikaadi on allkirjastanud sisseehitatud kohalik CA. Brauserid ja kliendid usaldavad seda alles pärast seda, kui kohaliku CA juursertifikaat on seadmesse installitud (vt kohaliku CA lehte)."
+	},
 	"certificates.request.subtitle": {
 		"defaultMessage": "Let's Encryptiga"
 	},
@@ -478,6 +493,75 @@
 	},
 	"loading": {
 		"defaultMessage": "Laadimine…"
+	},
+	"local-ca": {
+		"defaultMessage": "Kohalik CA"
+	},
+	"local-ca.create": {
+		"defaultMessage": "Loo kohalik CA"
+	},
+	"local-ca.description": {
+		"defaultMessage": "Kohalik CA allkirjastab sertifikaate teie siseteenustele: privaatsetele hostinimedele, metamärkidele ja IP-aadressidele, millele avalikud sertifitseerimisasutused sertifikaate ei väljasta. Sertifikaadid kehtivad umbes 825 päeva ja uuenevad automaatselt. Juursertifikaat tuleb igale seadmele, mis neid teenuseid avab, üks kord installida."
+	},
+	"local-ca.download-root": {
+		"defaultMessage": "Laadi alla juursertifikaat"
+	},
+	"local-ca.fingerprint": {
+		"defaultMessage": "SHA256 sõrmejälg"
+	},
+	"local-ca.install.android.body": {
+		"defaultMessage": "Kopeeri rootCA.pem seadmesse, seejärel vali Seaded > Turvalisus > Installi sertifikaat > CA sertifikaat ja vali fail. Chrome usaldab kasutaja installitud CA-sid, kuid enamik rakendusi mitte: rakendus usaldab neid ainult siis, kui selle võrguturbe konfiguratsioon lubab kasutaja CA-sid."
+	},
+	"local-ca.install.android.title": {
+		"defaultMessage": "Android"
+	},
+	"local-ca.install.intro": {
+		"defaultMessage": "Installi allolev juursertifikaat üks kord igasse seadmesse. Kontrolli, kas siin näidatud sõrmejälg ühtib installitava faili sõrmejäljega. Selle CA väljastatud sertifikaate usaldatakse seejärel kuni juursertifikaadi enda aegumiseni."
+	},
+	"local-ca.install.ios.body": {
+		"defaultMessage": "Saada rootCA.pem seadmesse (AirDrop, e-post või laadi see sellelt lehelt alla), ava see ja installi profiil jaotises Seaded > Allalaaditud profiil. Seejärel lülita täielik usaldus sisse jaotises Seaded > Üldine > Teave > Sertifikaatide usaldusseaded."
+	},
+	"local-ca.install.ios.title": {
+		"defaultMessage": "iOS / iPadOS"
+	},
+	"local-ca.install.linux.body": {
+		"defaultMessage": "Kopeeri rootCA.pem kataloogi /usr/local/share/ca-certificates/ nimega rootCA.crt ja käivita sudo update-ca-certificates (Debian/Ubuntu) või sinu distributsiooni samaväärne käsk. Firefox kasutab oma salve: impordi fail jaotises Seaded > Privaatsus ja turvalisus > Sertifikaadid."
+	},
+	"local-ca.install.linux.title": {
+		"defaultMessage": "Linux"
+	},
+	"local-ca.install.macos.body": {
+		"defaultMessage": "Ava rootCA.pem, et lisada see sisselogimise võtmehoidjasse, seejärel määra see Võtmehoidja juurdepääsus valikuks Always Trust SSL-i jaoks. Chrome ja Safari kasutavad süsteemi võtmehoidjat; Firefox kasutab oma salve (impordi jaotises Seaded > Privaatsus ja turvalisus > Sertifikaadid)."
+	},
+	"local-ca.install.macos.title": {
+		"defaultMessage": "macOS"
+	},
+	"local-ca.install.title": {
+		"defaultMessage": "Installi juursertifikaat oma seadmetesse"
+	},
+	"local-ca.install.warning": {
+		"defaultMessage": "Igaüks, kellel on CA privaatvõti, saab esineda mis tahes saidina, mille puhul seda CA-d usaldatakse. Võti ei lahku kunagi sellest serverist: seda hoitakse ainult /data köites ja seda ei pakuta kunagi allalaadimiseks. Varunda /data köide, et CA-d mitte kaotada."
+	},
+	"local-ca.install.windows.body": {
+		"defaultMessage": "Topeltklõpsa failil rootCA.pem, vali Installi sertifikaat ja paiguta see kohaliku masina usaldatud juursertifitseerimisasutuste salve. Chrome ja Edge kasutavad Windowsi salve; Firefox kasutab oma salve (impordi jaotises Seaded > Privaatsus ja turvalisus > Sertifikaadid)."
+	},
+	"local-ca.install.windows.title": {
+		"defaultMessage": "Windows"
+	},
+	"local-ca.not-created": {
+		"defaultMessage": "Kohalikku CA-d pole veel loodud. See luuakse automaatselt, kui taotled esimest kohaliku CA sertifikaati, või saad selle luua kohe."
+	},
+	"local-ca.subject": {
+		"defaultMessage": "Subjekt"
+	},
+	"local-ca.title": {
+		"defaultMessage": "Kohalik CA"
+	},
+	"local-ca.valid-from": {
+		"defaultMessage": "Kehtib alates"
+	},
+	"local-ca.valid-to": {
+		"defaultMessage": "Kehtib kuni"
 	},
 	"location.advanced-config": {
 		"defaultMessage": "Kohandatud Nginx seadistus olemas"

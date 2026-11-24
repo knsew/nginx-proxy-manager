@@ -170,6 +170,21 @@
 	"certificates.http.warning": {
 		"defaultMessage": "Estes domínios devem já estar configurados para apontar para esta instalação."
 	},
+	"certificates.local-ca": {
+		"defaultMessage": "CA local (mkcert)"
+	},
+	"certificates.local-ca.names-note": {
+		"defaultMessage": "Nomes de anfitrião, curingas (por ex., *.home.arpa) e endereços IP (por ex., 10.1.1.52) podem ser combinados num único certificado."
+	},
+	"certificates.local-ca.request.subtitle": {
+		"defaultMessage": "Assinado pela CA local integrada, para serviços internos"
+	},
+	"certificates.local-ca.request.title": {
+		"defaultMessage": "Solicitar um novo certificado da CA local"
+	},
+	"certificates.local-ca.warning": {
+		"defaultMessage": "Este certificado foi assinado pela CA local integrada. Os navegadores e clientes só confiarão nele depois de o certificado raiz da CA local ter sido instalado no dispositivo (ver a página da CA local)."
+	},
 	"certificates.request.subtitle": {
 		"defaultMessage": "com o Let's Encrypt"
 	},
@@ -385,6 +400,75 @@
 	},
 	"loading": {
 		"defaultMessage": "A carregar…"
+	},
+	"local-ca": {
+		"defaultMessage": "CA local"
+	},
+	"local-ca.create": {
+		"defaultMessage": "Criar CA local"
+	},
+	"local-ca.description": {
+		"defaultMessage": "A CA local assina certificados para os seus serviços internos: nomes de anfitrião privados, curingas e endereços IP para os quais as autoridades de certificação públicas nunca emitem certificados. Os certificados são válidos por cerca de 825 dias e renovam-se automaticamente. O certificado raiz tem de ser instalado uma vez em cada dispositivo que acede a estes serviços."
+	},
+	"local-ca.download-root": {
+		"defaultMessage": "Descarregar certificado raiz"
+	},
+	"local-ca.fingerprint": {
+		"defaultMessage": "Impressão digital SHA256"
+	},
+	"local-ca.install.android.body": {
+		"defaultMessage": "Copie o rootCA.pem para o dispositivo, depois vá a Definições > Segurança > Instalar um certificado > Certificado CA e escolha o ficheiro. O Chrome confia em CAs instaladas pelo utilizador, mas a maioria das aplicações não: uma aplicação só confia nelas se a sua configuração de segurança de rede permitir CAs de utilizador."
+	},
+	"local-ca.install.android.title": {
+		"defaultMessage": "Android"
+	},
+	"local-ca.install.intro": {
+		"defaultMessage": "Instale o certificado raiz abaixo uma vez em cada dispositivo. Verifique se a impressão digital apresentada aqui corresponde à impressão digital do ficheiro que instalar. Os certificados emitidos por esta CA passam então a ser confiáveis até o próprio certificado raiz expirar."
+	},
+	"local-ca.install.ios.body": {
+		"defaultMessage": "Envie o rootCA.pem para o dispositivo (AirDrop, e-mail ou descarregue-o desta página), abra-o e instale o perfil em Definições > Perfil transferido. Depois, ative a confiança total em Definições > Geral > Informações > Definições de confiança de certificados."
+	},
+	"local-ca.install.ios.title": {
+		"defaultMessage": "iOS / iPadOS"
+	},
+	"local-ca.install.linux.body": {
+		"defaultMessage": "Copie o rootCA.pem para /usr/local/share/ca-certificates/ como rootCA.crt e execute sudo update-ca-certificates (Debian/Ubuntu) ou o equivalente da sua distribuição. O Firefox usa o seu próprio arquivo: importe o ficheiro em Definições > Privacidade e segurança > Certificados."
+	},
+	"local-ca.install.linux.title": {
+		"defaultMessage": "Linux"
+	},
+	"local-ca.install.macos.body": {
+		"defaultMessage": "Abra o rootCA.pem para o adicionar ao chaveiro de início de sessão e, no Acesso ao Chaveiro, defina-o como Sempre confiar para SSL. O Chrome e o Safari usam o chaveiro do sistema; o Firefox usa o seu próprio arquivo (importe em Definições > Privacidade e segurança > Certificados)."
+	},
+	"local-ca.install.macos.title": {
+		"defaultMessage": "macOS"
+	},
+	"local-ca.install.title": {
+		"defaultMessage": "Instalar o certificado raiz nos seus dispositivos"
+	},
+	"local-ca.install.warning": {
+		"defaultMessage": "Quem possuir a chave privada da CA pode personificar qualquer site em que esta CA seja confiável. A chave nunca sai deste servidor: é armazenada apenas no volume /data e nunca é disponibilizada para descarregar. Faça cópia de segurança do volume /data para não perder a CA."
+	},
+	"local-ca.install.windows.body": {
+		"defaultMessage": "Faça duplo clique no rootCA.pem, escolha Instalar certificado e coloque-o no arquivo Autoridades de certificação raiz fidedignas da Máquina local. O Chrome e o Edge usam o arquivo do Windows; o Firefox usa o seu próprio arquivo (importe em Definições > Privacidade e segurança > Certificados)."
+	},
+	"local-ca.install.windows.title": {
+		"defaultMessage": "Windows"
+	},
+	"local-ca.not-created": {
+		"defaultMessage": "Ainda não existe uma CA local. Será criada automaticamente quando solicitar o seu primeiro certificado da CA local, ou pode criá-la já."
+	},
+	"local-ca.subject": {
+		"defaultMessage": "Assunto"
+	},
+	"local-ca.title": {
+		"defaultMessage": "CA local"
+	},
+	"local-ca.valid-from": {
+		"defaultMessage": "Válido desde"
+	},
+	"local-ca.valid-to": {
+		"defaultMessage": "Válido até"
 	},
 	"login.title": {
 		"defaultMessage": "Iniciar sessão na sua conta"

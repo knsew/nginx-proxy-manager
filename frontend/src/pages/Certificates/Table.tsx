@@ -13,7 +13,12 @@ import {
 import { type Features, features } from "src/components/Table/features";
 import { TableLayout } from "src/components/Table/TableLayout";
 import { intl, T } from "src/locale";
-import { showCustomCertificateModal, showDNSCertificateModal, showHTTPCertificateModal } from "src/modals";
+import {
+	showCustomCertificateModal,
+	showDNSCertificateModal,
+	showHTTPCertificateModal,
+	showLocalCACertificateModal,
+} from "src/modals";
 import { CERTIFICATES, MANAGE } from "src/modules/Permissions";
 
 interface Props {
@@ -70,6 +75,9 @@ export default function Table({ data, isFetching, onDelete, onRenew, onDownload,
 					}
 					if (r.provider === "other") {
 						return <T id="certificates.custom" />;
+					}
+					if (r.provider === "mkcert") {
+						return <T id="certificates.local-ca" />;
 					}
 					return <T id={r.provider} />;
 				},
@@ -200,6 +208,16 @@ export default function Table({ data, isFetching, onDelete, onRenew, onDownload,
 					}}
 				>
 					<T id="lets-encrypt-via-dns" />
+				</a>
+				<a
+					className="dropdown-item"
+					href="#"
+					onClick={(e) => {
+						e.preventDefault();
+						showLocalCACertificateModal();
+					}}
+				>
+					<T id="certificates.local-ca" />
 				</a>
 				<div className="dropdown-divider" />
 				<a

@@ -20,12 +20,13 @@ export function SSLOptionsFields({
 	const { values, setFieldValue } = useFormikContext();
 	const v: any = values || {};
 
-	const newCertificate = v?.certificateId === "new";
+	const newLetsEncryptCertificate = v?.certificateId === "new";
+	const newCertificate = newLetsEncryptCertificate || v?.certificateId === "new-mkcert";
 	const hasCertificate = newCertificate || (v?.certificateId && v?.certificateId > 0);
 	const { sslForced, http2Support, hstsEnabled, hstsSubdomains, trustForwardedProto, meta } = v;
 	const { dnsChallenge } = meta || {};
 
-	if (forceDNSForNew && newCertificate && !dnsChallenge) {
+	if (forceDNSForNew && newLetsEncryptCertificate && !dnsChallenge) {
 		setFieldValue("meta.dnsChallenge", true);
 	}
 
@@ -157,24 +158,26 @@ export function SSLOptionsFields({
 			{forHttp ? getHttpOptions() : null}
 			{newCertificate ? (
 				<>
-					<Field name="meta.dnsChallenge">
-						{({ field }: any) => (
-							<label className="form-check form-switch mt-1">
-								<input
-									className={dnsChallenge ? toggleEnabled : toggleClasses}
-									type="checkbox"
-									checked={forceDNSForNew ? true : !!dnsChallenge}
-									disabled={forceDNSForNew}
-									onChange={(e) => handleToggleChange(e, field.name)}
-								/>
-								<span className="form-check-label">
-									<T id="domains.use-dns" />
-								</span>
-							</label>
-						)}
-					</Field>
+					{newLetsEncryptCertificate ? (
+						<Field name="meta.dnsChallenge">
+							{({ field }: any) => (
+								<label className="form-check form-switch mt-1">
+									<input
+										className={dnsChallenge ? toggleEnabled : toggleClasses}
+										type="checkbox"
+										checked={forceDNSForNew ? true : !!dnsChallenge}
+										disabled={forceDNSForNew}
+										onChange={(e) => handleToggleChange(e, field.name)}
+									/>
+									<span className="form-check-label">
+										<T id="domains.use-dns" />
+									</span>
+								</label>
+							)}
+						</Field>
+					) : null}
 					{requireDomainNames ? <DomainNamesField isWildcardPermitted dnsProviderWildcardSupported /> : null}
-					{dnsChallenge ? <DNSProviderFields showBoundaryBox /> : null}
+					{newLetsEncryptCertificate && dnsChallenge ? <DNSProviderFields showBoundaryBox /> : null}
 				</>
 			) : null}
 			{forProxyHost && forHttp ? getHttpAdvancedOptions() : null}

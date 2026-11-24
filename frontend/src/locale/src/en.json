@@ -251,6 +251,21 @@
 	"certificates.key-type-rsa": {
 		"defaultMessage": "RSA 2048"
 	},
+	"certificates.local-ca": {
+		"defaultMessage": "Local CA (mkcert)"
+	},
+	"certificates.local-ca.names-note": {
+		"defaultMessage": "Hostnames, wildcards (e.g. *.home.arpa) and IP addresses (e.g. 10.1.1.52) can be combined on one certificate."
+	},
+	"certificates.local-ca.request.subtitle": {
+		"defaultMessage": "Signed by the built-in Local CA, for internal services"
+	},
+	"certificates.local-ca.request.title": {
+		"defaultMessage": "Request a new Local CA Certificate"
+	},
+	"certificates.local-ca.warning": {
+		"defaultMessage": "This certificate is signed by the built-in Local CA. Browsers and clients will only trust it after the Local CA root certificate has been installed on the device (see the Local CA page)."
+	},
 	"certificates.request.subtitle": {
 		"defaultMessage": "with Let's Encrypt"
 	},
@@ -478,6 +493,75 @@
 	},
 	"loading": {
 		"defaultMessage": "Loading…"
+	},
+	"local-ca": {
+		"defaultMessage": "Local CA"
+	},
+	"local-ca.create": {
+		"defaultMessage": "Create Local CA"
+	},
+	"local-ca.description": {
+		"defaultMessage": "The Local CA signs certificates for your internal services: private hostnames, wildcards and IP addresses that public certificate authorities cannot issue for. Certificates last about 825 days and renew automatically. The root certificate must be installed once on every device that opens these services."
+	},
+	"local-ca.download-root": {
+		"defaultMessage": "Download Root Certificate"
+	},
+	"local-ca.fingerprint": {
+		"defaultMessage": "SHA256 Fingerprint"
+	},
+	"local-ca.install.android.body": {
+		"defaultMessage": "Copy rootCA.pem to the device, then go to Settings > Security > Install a certificate > CA certificate and pick the file. Chrome trusts user-installed CAs, but most apps do not: an app only trusts them if its network security config opts in to user CAs."
+	},
+	"local-ca.install.android.title": {
+		"defaultMessage": "Android"
+	},
+	"local-ca.install.intro": {
+		"defaultMessage": "Install the root certificate below once on each device. Check that the fingerprint shown here matches the fingerprint of the file you install. Certificates issued by this CA are then trusted until the root certificate itself expires."
+	},
+	"local-ca.install.ios.body": {
+		"defaultMessage": "Send rootCA.pem to the device (AirDrop, email, or download it from this page), open it, then install the profile under Settings > Profile Downloaded. Afterwards, enable full trust under Settings > General > About > Certificate Trust Settings."
+	},
+	"local-ca.install.ios.title": {
+		"defaultMessage": "iOS / iPadOS"
+	},
+	"local-ca.install.linux.body": {
+		"defaultMessage": "Copy rootCA.pem to /usr/local/share/ca-certificates/ as rootCA.crt and run sudo update-ca-certificates (Debian/Ubuntu) or the equivalent for your distribution. Firefox uses its own store: import the file under Settings > Privacy & Security > Certificates."
+	},
+	"local-ca.install.linux.title": {
+		"defaultMessage": "Linux"
+	},
+	"local-ca.install.macos.body": {
+		"defaultMessage": "Open rootCA.pem to add it to the login keychain, then in Keychain Access set it to Always Trust for SSL. Chrome and Safari use the system keychain; Firefox uses its own store (import under Settings > Privacy & Security > Certificates)."
+	},
+	"local-ca.install.macos.title": {
+		"defaultMessage": "macOS"
+	},
+	"local-ca.install.title": {
+		"defaultMessage": "Install the Root Certificate on Your Devices"
+	},
+	"local-ca.install.warning": {
+		"defaultMessage": "Anyone holding the CA private key can impersonate any site this CA is trusted for. The key never leaves this server: it is stored only on the /data volume and is never offered for download. Back up the /data volume to avoid losing the CA."
+	},
+	"local-ca.install.windows.body": {
+		"defaultMessage": "Double-click rootCA.pem, choose Install Certificate, and place it in the Trusted Root Certification Authorities store for the Local Machine. Chrome and Edge use the Windows store; Firefox uses its own store (import under Settings > Privacy & Security > Certificates)."
+	},
+	"local-ca.install.windows.title": {
+		"defaultMessage": "Windows"
+	},
+	"local-ca.not-created": {
+		"defaultMessage": "No Local CA exists yet. It will be created automatically when you request your first Local CA certificate, or you can create it now."
+	},
+	"local-ca.subject": {
+		"defaultMessage": "Subject"
+	},
+	"local-ca.title": {
+		"defaultMessage": "Local CA"
+	},
+	"local-ca.valid-from": {
+		"defaultMessage": "Valid From"
+	},
+	"local-ca.valid-to": {
+		"defaultMessage": "Valid To"
 	},
 	"location.advanced-config": {
 		"defaultMessage": "Has custom Nginx configuration"

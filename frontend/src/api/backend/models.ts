@@ -126,6 +126,14 @@ export interface Certificate {
 	redirectionHosts?: RedirectionHost[];
 }
 
+export interface LocalCAStatus {
+	exists: boolean;
+	fingerprintSha256?: string;
+	subject?: string;
+	validFrom?: string;
+	validTo?: string;
+}
+
 export interface ProxyLocation {
 	path: string;
 	advancedConfig: string;

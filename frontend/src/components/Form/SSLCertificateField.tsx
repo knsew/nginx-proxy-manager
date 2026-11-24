@@ -7,7 +7,7 @@ import { useCertificates } from "src/hooks";
 import { formatDateTime, intl, T } from "src/locale";
 
 interface CertOption {
-	readonly value: number | "new";
+	readonly value: number | "new" | "new-mkcert";
 	readonly label: string;
 	readonly subLabel: string;
 	readonly icon: React.ReactNode;
@@ -81,8 +81,14 @@ export function SSLCertificateField({
 			icon: <IconShield size={14} className="text-pink" />,
 		})) || [];
 
-	// Prepend the Add New option
+	// Prepend the Add New options
 	if (allowNew) {
+		options?.unshift({
+			value: "new-mkcert",
+			label: intl.formatMessage({ id: "certificates.local-ca.request.title" }),
+			subLabel: intl.formatMessage({ id: "certificates.local-ca.request.subtitle" }),
+			icon: <IconShield size={14} className="text-teal" />,
+		});
 		options?.unshift({
 			value: "new",
 			label: intl.formatMessage({ id: "certificates.request.title" }),

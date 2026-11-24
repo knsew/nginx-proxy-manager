@@ -251,6 +251,21 @@
 	"certificates.key-type-rsa": {
 		"defaultMessage": "RSA 2048"
 	},
+	"certificates.local-ca": {
+		"defaultMessage": "CA nội bộ (mkcert)"
+	},
+	"certificates.local-ca.names-note": {
+		"defaultMessage": "Tên máy chủ, ký tự đại diện (ví dụ: *.home.arpa) và địa chỉ IP (ví dụ: 10.1.1.52) có thể kết hợp trên một chứng chỉ."
+	},
+	"certificates.local-ca.request.subtitle": {
+		"defaultMessage": "Được ký bởi CA nội bộ tích hợp, dành cho các dịch vụ nội bộ"
+	},
+	"certificates.local-ca.request.title": {
+		"defaultMessage": "Yêu cầu chứng chỉ CA nội bộ mới"
+	},
+	"certificates.local-ca.warning": {
+		"defaultMessage": "Chứng chỉ này được ký bởi CA nội bộ tích hợp. Trình duyệt và ứng dụng khách chỉ tin cậy nó sau khi chứng chỉ gốc của CA nội bộ đã được cài đặt trên thiết bị (xem trang CA nội bộ)."
+	},
 	"certificates.request.subtitle": {
 		"defaultMessage": "bằng Let's Encrypt"
 	},
@@ -478,6 +493,75 @@
 	},
 	"loading": {
 		"defaultMessage": "Đang tải…"
+	},
+	"local-ca": {
+		"defaultMessage": "CA nội bộ"
+	},
+	"local-ca.create": {
+		"defaultMessage": "Tạo CA nội bộ"
+	},
+	"local-ca.description": {
+		"defaultMessage": "CA nội bộ ký chứng chỉ cho các dịch vụ nội bộ của bạn: tên máy chủ riêng, ký tự đại diện và địa chỉ IP mà các tổ chức cấp chứng chỉ công khai không thể cấp. Chứng chỉ có hiệu lực khoảng 825 ngày và tự động gia hạn. Chứng chỉ gốc phải được cài đặt một lần trên mỗi thiết bị mở các dịch vụ này."
+	},
+	"local-ca.download-root": {
+		"defaultMessage": "Tải xuống chứng chỉ gốc"
+	},
+	"local-ca.fingerprint": {
+		"defaultMessage": "Dấu vân tay SHA256"
+	},
+	"local-ca.install.android.body": {
+		"defaultMessage": "Sao chép rootCA.pem vào thiết bị, sau đó vào Cài đặt > Bảo mật > Cài đặt chứng chỉ > Chứng chỉ CA và chọn tệp. Chrome tin cậy các CA do người dùng cài đặt, nhưng hầu hết các ứng dụng thì không: ứng dụng chỉ tin cậy chúng nếu cấu hình bảo mật mạng của nó cho phép CA của người dùng."
+	},
+	"local-ca.install.android.title": {
+		"defaultMessage": "Android"
+	},
+	"local-ca.install.intro": {
+		"defaultMessage": "Cài đặt chứng chỉ gốc bên dưới một lần trên mỗi thiết bị. Kiểm tra dấu vân tay hiển thị tại đây khớp với dấu vân tay của tệp bạn cài đặt. Các chứng chỉ do CA này cấp sau đó sẽ được tin cậy cho đến khi chính chứng chỉ gốc hết hạn."
+	},
+	"local-ca.install.ios.body": {
+		"defaultMessage": "Gửi rootCA.pem đến thiết bị (AirDrop, email hoặc tải xuống từ trang này), mở nó, sau đó cài đặt hồ sơ trong Cài đặt > Hồ sơ đã tải về. Sau đó, bật tin cậy hoàn toàn trong Cài đặt > Cài đặt chung > Giới thiệu > Cài đặt tin cậy chứng chỉ."
+	},
+	"local-ca.install.ios.title": {
+		"defaultMessage": "iOS / iPadOS"
+	},
+	"local-ca.install.linux.body": {
+		"defaultMessage": "Sao chép rootCA.pem vào /usr/local/share/ca-certificates/ với tên rootCA.crt và chạy sudo update-ca-certificates (Debian/Ubuntu) hoặc lệnh tương đương của bản phân phối của bạn. Firefox sử dụng kho riêng: nhập tệp trong Cài đặt > Quyền riêng tư & Bảo mật > Chứng chỉ."
+	},
+	"local-ca.install.linux.title": {
+		"defaultMessage": "Linux"
+	},
+	"local-ca.install.macos.body": {
+		"defaultMessage": "Mở rootCA.pem để thêm vào chuỗi khóa đăng nhập, sau đó trong Keychain Access đặt thành Always Trust cho SSL. Chrome và Safari sử dụng chuỗi khóa hệ thống; Firefox sử dụng kho riêng (nhập trong Cài đặt > Quyền riêng tư & Bảo mật > Chứng chỉ)."
+	},
+	"local-ca.install.macos.title": {
+		"defaultMessage": "macOS"
+	},
+	"local-ca.install.title": {
+		"defaultMessage": "Cài đặt chứng chỉ gốc trên thiết bị của bạn"
+	},
+	"local-ca.install.warning": {
+		"defaultMessage": "Bất kỳ ai nắm giữ khóa riêng của CA đều có thể mạo danh bất kỳ trang web nào mà CA này được tin cậy. Khóa không bao giờ rời khỏi máy chủ này: nó chỉ được lưu trữ trên ổ /data và không bao giờ được cung cấp để tải xuống. Hãy sao lưu ổ /data để tránh mất CA."
+	},
+	"local-ca.install.windows.body": {
+		"defaultMessage": "Nhấp đúp vào rootCA.pem, chọn Cài đặt chứng chỉ và đặt vào kho Tổ chức cấp chứng chỉ gốc đáng tin cậy cho Máy cục bộ. Chrome và Edge sử dụng kho của Windows; Firefox sử dụng kho riêng (nhập trong Cài đặt > Quyền riêng tư & Bảo mật > Chứng chỉ)."
+	},
+	"local-ca.install.windows.title": {
+		"defaultMessage": "Windows"
+	},
+	"local-ca.not-created": {
+		"defaultMessage": "Chưa có CA nội bộ nào. Nó sẽ được tạo tự động khi bạn yêu cầu chứng chỉ CA nội bộ đầu tiên, hoặc bạn có thể tạo ngay bây giờ."
+	},
+	"local-ca.subject": {
+		"defaultMessage": "Chủ thể"
+	},
+	"local-ca.title": {
+		"defaultMessage": "CA nội bộ"
+	},
+	"local-ca.valid-from": {
+		"defaultMessage": "Có hiệu lực từ"
+	},
+	"local-ca.valid-to": {
+		"defaultMessage": "Có hiệu lực đến"
 	},
 	"location.advanced-config": {
 		"defaultMessage": "Có cấu hình Nginx tùy chỉnh"

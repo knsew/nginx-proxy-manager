@@ -8,6 +8,7 @@ export * from "./EventDetailsModal";
 export * from "./HelpModal";
 export * from "./HostLogsModal";
 export * from "./HTTPCertificateModal";
+export * from "./LocalCACertificateModal";
 export * from "./PermissionsModal";
 export * from "./ProxyHostModal";
 export * from "./RedirectionHostModal";

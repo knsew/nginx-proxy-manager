@@ -12,6 +12,7 @@ export * from "./useHealth";
 export * from "./useHostReport";
 export * from "./useLogSources";
 export * from "./useLogTail";
+export * from "./useLocalCA";
 export * from "./useProxyHost";
 export * from "./useProxyHostLogs";
 export * from "./useProxyHosts";
