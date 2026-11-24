@@ -1,0 +1,24 @@
+# Nginx Proxy Manager + built-in mkcert Local CA
+#
+# Deploy with a locally loaded image (see README.md in this folder):
+#   docker load -i npm-mkcert-2.17.1-mkcert1.tar.gz
+#   docker compose up -d
+#
+# Persistence is folder mappings only:
+#   ./data         -> /data            (NPM database, mkcert CA, leaf certificates)
+#   ./letsencrypt  -> /etc/letsencrypt (Let's Encrypt certificates)
+# Back up ./data: it holds the Local CA private key. Losing it means the CA
+# is gone and every device must trust a new root certificate.
+
+services:
+  npm-mkcert:
+    image: npm-mkcert:2.17.1-mkcert1
+    container_name: npm-mkcert
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "81:81"
+    volumes:
+      - ./data:/data
+      - ./letsencrypt:/etc/letsencrypt

@@ -1,0 +1,119 @@
+# Fork-only workflow. Upstream Nginx Proxy Manager uses Jenkins; this fork has
+# no Docker Hub credentials, so the image is NOT pushed to a registry. Instead
+# the built image is exported with `docker save` and uploaded as an artifact:
+# download it, then follow deploy/README.md (docker load -i, docker compose up).
+#
+# Public repository: GitHub-hosted runners are free here.
+
+name: Build image
+
+on:
+  push:
+    branches:
+      - develop
+  workflow_dispatch:
+
+env:
+  IMAGE_NAME: npm-mkcert
+  IMAGE_TAG: 2.17.1-mkcert1
+  MKCERT_VERSION: 1.4.4
+
+jobs:
+  backend-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install yarn
+        run: npm install -g yarn
+      - name: Install mkcert (for the Local CA tests)
+        run: |
+          curl -fsSL -o /tmp/mkcert "https://github.com/FiloSottile/mkcert/releases/download/v${MKCERT_VERSION}/mkcert-v${MKCERT_VERSION}-linux-amd64"
+          chmod +x /tmp/mkcert
+          /tmp/mkcert -version
+      - name: Install backend dependencies
+        run: yarn install --frozen-lockfile
+        working-directory: backend
+      - name: Lint backend
+        run: yarn lint
+        working-directory: backend
+      - name: Validate API schema
+        run: yarn validate-schema
+        working-directory: backend
+      - name: Test backend
+        run: yarn test
+        working-directory: backend
+        env:
+          MKCERT_BIN: /tmp/mkcert
+
+  frontend-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install yarn
+        run: npm install -g yarn
+      - name: Install frontend dependencies
+        run: yarn install --frozen-lockfile
+        working-directory: frontend
+      - name: Lint frontend
+        run: yarn lint
+        working-directory: frontend
+      - name: Compile locales
+        run: yarn locale-compile
+        working-directory: frontend
+      - name: Test frontend
+        run: yarn vitest run --no-color
+        working-directory: frontend
+      - name: Build frontend
+        run: yarn build
+        working-directory: frontend
+      - name: Upload built frontend
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend/dist
+          if-no-files-found: error
+
+  build-image:
+    needs:
+      - backend-test
+      - frontend-build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download built frontend
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend/dist
+      - name: Build image
+        run: |
+          docker build --pull --no-cache --compress \
+            -t "${IMAGE_NAME}:${IMAGE_TAG}" \
+            -f docker/Dockerfile \
+            --progress=plain \
+            --build-arg TARGETPLATFORM=linux/amd64 \
+            --build-arg BUILDPLATFORM=linux/amd64 \
+            --build-arg BUILD_VERSION="${IMAGE_TAG}" \
+            --build-arg BUILD_COMMIT="${GITHUB_SHA}" \
+            --build-arg BUILD_DATE="$(date '+%Y-%m-%d %T %Z')" \
+            .
+      - name: Smoke test
+        run: python3 test/host-header-smoke.py "${IMAGE_NAME}:${IMAGE_TAG}"
+      - name: Export image
+        run: |
+          docker save "${IMAGE_NAME}:${IMAGE_TAG}" | gzip > "npm-mkcert-${IMAGE_TAG}.tar.gz"
+          sha256sum "npm-mkcert-${IMAGE_TAG}.tar.gz"
+          ls -lh "npm-mkcert-${IMAGE_TAG}.tar.gz"
+      - name: Upload image tarball
+        uses: actions/upload-artifact@v4
+        with:
+          name: npm-mkcert-image
+          path: npm-mkcert-${{ env.IMAGE_TAG }}.tar.gz
+          if-no-files-found: error
+          retention-days: 30
