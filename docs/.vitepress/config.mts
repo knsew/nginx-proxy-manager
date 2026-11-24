@@ -85,6 +85,7 @@ export default defineConfig({
 					{ text: "Upgrading", link: "/upgrading/" },
 					{ text: "Frequently Asked Questions", link: "/faq/" },
 					{ text: "Certbot", link: "/certbot/" },
+					{ text: "Local CA", link: "/local-ca/" },
 					{ text: "Third Party", link: "/third-party/" },
 				],
 			},

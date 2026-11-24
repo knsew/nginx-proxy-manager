@@ -88,6 +88,28 @@ Sometimes this can take a little bit because of the entropy of keys.
 [http://127.0.0.1:81](http://127.0.0.1:81)
 
 
+## Local CA (fork addition)
+
+This fork adds a built-in **Local CA** powered by [mkcert](https://github.com/FiloSottile/mkcert),
+so one container can issue trusted HTTPS certificates for internal services:
+private hostnames, wildcards and IP addresses that public CAs will never sign.
+
+- The container generates its own root CA on first use and keeps it in the
+  `/data` volume; leaf certificates last ~825 days and renew automatically.
+- Request a Local CA certificate from **SSL Certificates**, or pick *Request a
+  new Local CA Certificate* when creating a host.
+- The **Local CA** page in the admin UI lets you download the root certificate
+  and shows its SHA256 fingerprint and per-platform install guide. Each device
+  needs the root installed once; after that, every certificate from this CA is
+  trusted on it.
+- Let's Encrypt is unchanged; the two providers mix freely per certificate.
+- The CA private key (`rootCA-key.pem`) never leaves the `/data` volume and is
+  never served by the API — back up `/data` to avoid losing the CA.
+
+Full documentation: [Local CA](docs/src/local-ca/index.md).
+Deployment: see [deploy/README.md](deploy/README.md).
+
+
 ## Contributing
 
 All are welcome to create pull requests for this project, against the `develop` branch. Official releases are created from the `master` branch.
